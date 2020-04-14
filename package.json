@@ -2,7 +2,7 @@
   "name": "fiance-api",
   "version": "1.0.0",
   "description": "",
-  "main": "resolvers.js",
+  "main": "server.js",
   "dependencies": {
     "express-graphql": "^0.9.0",
     "pg": "^8.0.0"
