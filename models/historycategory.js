@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     historyId: DataTypes.INTEGER,
     name: DataTypes.STRING,
     amount: DataTypes.INTEGER
-  }, {});
+  }, {timestamps: false});
   HistoryCategory.associate = function(models) {
     // associations can be defined here
   };

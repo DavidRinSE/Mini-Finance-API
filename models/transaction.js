@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     amount: DataTypes.INTEGER,
     date: DataTypes.STRING,
     isExpense: DataTypes.BOOLEAN
-  }, {});
+  }, {timestamps: false});
   Transaction.associate = function(models) {
     // associations can be defined here
   };

@@ -10,7 +10,9 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "migrate:up": "if [ -e .env ]; then . ./.env; fi && sequelize db:migrate --url $DATABASE_URL",
+    "migrate:down": "if [ -e .env ]; then . ./.env; fi && sequelize db:migrate:undo --url $DATABASE_URL"
   },
   "keywords": [],
   "author": "",
