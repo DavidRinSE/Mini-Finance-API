@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     expense: DataTypes.INTEGER,
     startDate: DataTypes.STRING,
     endDate: DataTypes.STRING
-  }, {});
+  }, {timestamps: false});
   History.associate = function(models) {
     // associations can be defined here
     History.hasMany(models.HistoryCategory, {
