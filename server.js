@@ -7,12 +7,12 @@ const port = 4000
 
 const typeDefs = require('./schema')
 const resolvers = require('./resolvers')
-// const models = require('./models')
+const models = require('./models')
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({ typeDefs, resolvers, context: { models } });
 server.applyMiddleware({ app });
-// models.sequelize.authenticate();
-// models.sequelize.sync();
+models.sequelize.authenticate();
+models.sequelize.sync();
 
 app.listen({ port }, () =>
   console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`)
