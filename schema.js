@@ -38,7 +38,7 @@ type Categories {
 }
 
 type Login {
-    token: String!
+    token: String
 }
 
 type Query {
