@@ -37,8 +37,13 @@ type Categories {
     amount: String!
 }
 
+type Error {
+    message: String
+}
+
 type Login {
     token: String
+    error: Error
 }
 
 type Query {
@@ -48,7 +53,7 @@ type Query {
 }
 
 type Mutation {
-    login(username: String!, password: String!): Login!
+    login(username: String!, password: String!): Login
 }
 `
 
