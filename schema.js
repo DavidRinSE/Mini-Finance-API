@@ -37,10 +37,23 @@ type Categories {
     amount: String!
 }
 
+type Error {
+    message: String
+}
+
+type Login {
+    token: String
+    error: Error
+}
+
 type Query {
     user(username: String!): User!
     users: [User!]!
     history(username: String!): [History!]!
+}
+
+type Mutation {
+    login(username: String!, password: String!): Login
 }
 `
 
