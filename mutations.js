@@ -21,6 +21,24 @@ const mutations = {
                 return {error: {message: "Incorrect password"}}
             }
         }
+    },
+    createUser: async (_, {username, password}, {models}) => {
+        const searchUser = await models.User.findAll({where: {username}})
+        if (searchUser.length === 0){
+            const hash = await bcrypt.hash(password, 10)
+            const user = await models.User.create({
+                username,
+                password: hash,
+                balance: 0,
+                income: 0,
+                expense: 0
+            })
+            return user
+        } else {
+            return {error: {
+                message: "User already exist"
+            }}
+        }
     }
 }
 
