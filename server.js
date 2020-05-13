@@ -10,7 +10,14 @@ const typeDefs = require('./schema')
 const resolvers = require('./resolvers')
 const models = require('./models')
 
-const server = new ApolloServer({ typeDefs, resolvers, context: { models } });
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: async ({ req }) => ({
+      models,
+      token: req.headers.authorization || ''
+    })
+});
 server.applyMiddleware({ app });
 models.sequelize.authenticate();
 models.sequelize.sync();
