@@ -1,19 +1,8 @@
+const mutations = require("./mutations")
+const queries = require("./queries")
 const resolvers = {
-    Query: {
-        user: async (_, {username}, {models}) => {
-            const user = await models.User.findAll({where: {username}})
-            return user[0]
-        },
-        users: async (_, args, {models}) => {
-            const users = await models.User.findAll()
-            return users
-        },
-        history: async (_, {username}, {models}) => {
-            const user = await models.User.findAll({where: {username}})
-            const history = await user[0].getHistories()
-            return history
-        }
-    },
+    Query: {...queries},
+    Mutation: {...mutations},
     User: {
         transactions: async (parent) => {
             const transactions = await parent.getTransactions()
