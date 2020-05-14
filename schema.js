@@ -8,34 +8,34 @@ type User {
     balance: Int
     expense: Int
     income: Int
-    transactions: [Transaction]
-    history: [History]
+    transactions: [Transaction!]
+    history: [History!]
     error: Error
 }
 
 type Transaction {
-    id: Int!
-    name: String!
-    category: String!
-    amount: Int!
-    date: String!
-    isExpense: Boolean!
+    id: Int 
+    name: String 
+    category: String 
+    amount: Int 
+    date: String 
+    isExpense: Boolean 
 }
 
 type History {
-    id: Int!
-    balance: Int!
-    income: Int!
-    expense: Int!
-    startDate: String!
-    endDate: String!
-    categories: [Categories!]!
+    id: Int 
+    balance: Int 
+    income: Int 
+    expense: Int 
+    startDate: String 
+    endDate: String 
+    categories: [Categories!] 
 }
 
 type Categories {
-    id: Int!
-    name: String!
-    amount: String!
+    id: Int 
+    name: String 
+    amount: String 
 }
 
 type Error {
@@ -48,9 +48,9 @@ type Login {
 }
 
 type Query {
-    user(username: String!): User!
-    users: [User!]!
-    history(username: String!): [History!]!
+    user: User 
+    users: [User!] 
+    history: [History!] 
 }
 
 type Mutation {
