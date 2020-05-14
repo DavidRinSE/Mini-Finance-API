@@ -70,6 +70,52 @@ const mutations = {
             console.log(err)
             throw new AuthenticationError("You must be logged in!")
         }
+    },
+    deleteUser: async (_, __, {models, token}) => {
+        let decoded
+        
+        try {
+            decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET)
+        } catch (err){
+            throw new AuthenticationError("You must be logged in!")
+        }
+
+        let user = await models.User.findOne({where: {username: decoded.username}})
+        
+        user = await models.User.destroy({where: {id: user.id}})
+        return "Success"
+    },
+    deleteTransaction: async (_, {id}, {models, token}) => {
+        let decoded;
+        
+        try {
+            decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET)
+        } catch (err) {
+            throw new AuthenticationError("You must be logged in!")
+        }
+        
+        let user = await models.User.findOne({where: {username: decoded.username}})
+        let transaction = await models.Transaction.findOne({where: {id}})
+
+        if (transaction.isExpense) {
+            user = await user.update({
+                balance: user.balance + transaction.amount,
+                expense: user.expense - transaction.amount
+            })
+        } else {
+            user = await user.update({
+                balance: user.balance - transaction.amount,
+                income: user.income - transaction.amount
+            })
+        }
+
+        if(transaction.userId === user.id){
+            models.Transaction.destroy({where: {id}})
+        }else {
+            throw new AuthenticationError("Cannot destroy a transaction you don't own")
+        }
+
+        return "Success"
     }
 }
 
