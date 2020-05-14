@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
-
+const { AuthenticationError } = require('apollo-server-express')
 // const {UserInputError} = require('apollo-server-express')
 
 const mutations = {
@@ -38,6 +38,37 @@ const mutations = {
             return {error: {
                 message: "User already exist"
             }}
+        }
+    },
+    createTransaction: async (_, {name, amount, date, isExpense, category}, {models, token}) => {
+        try {
+            let decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET)
+            
+            const userQueryArr = await models.User.findAll({where: {username: decoded.username}})
+            let user = userQueryArr[0]
+
+            if(isExpense) {
+                user = await user.update({
+                    balance: user.balance - amount,
+                    expense: user.expense + amount
+                })
+            } else {
+                user = await user.update({
+                    balance: user.balance + amount,
+                    income: user.income + amount
+                })
+            }
+
+            let data = {name, amount, date, isExpense, category: category || ""}
+            const transaction = await models.Transaction.create({
+                userId: user.id,
+                ...data
+            })
+
+            return transaction
+        } catch (err){
+            console.log(err)
+            throw new AuthenticationError("You must be logged in!")
         }
     }
 }
