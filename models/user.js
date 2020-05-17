@@ -10,10 +10,10 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = function(models) {
     // associations can be defined here
     User.hasMany(models.Transaction,{
-      foreignKey:"userId"
+      foreignKey:"userId",
     })
     User.hasMany(models.History,{
-      foreignKey:"userId"
+      foreignKey:"userId",
     })
   };
   return User;

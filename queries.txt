@@ -1,0 +1,113 @@
+query user {
+  user {
+    balance
+    expense
+    income
+    transactions {
+      id
+      name
+      category
+      amount
+      date
+      isExpense
+    }
+    history {
+      balance
+      income
+      expense
+      startDate
+      endDate
+      categories {
+        name
+        amount
+      }
+    }
+    error {
+      message
+    }
+  }
+}
+
+query history {
+   history {
+      balance
+      income
+      expense
+      startDate
+      endDate
+      categories {
+        name
+        amount
+      }
+    }
+}
+
+mutation login {
+  login(username: "David2", password: "asdf") {
+    token
+    error {
+      message
+    }
+  }
+}
+
+mutation createUser {
+  createUser(username: "David2", password: "asdf") {
+    balance
+    expense
+    income
+    transactions {
+      name
+      category
+      amount
+      date
+      isExpense
+    }
+    history {
+      balance
+      income
+      expense
+      startDate
+      endDate
+      categories {
+        name
+        amount
+      }
+    }
+    error {
+      message
+    }
+  }
+}
+
+mutation expense {
+  createTransaction(name:"Red Bull", amount: 300, date: "2020-05-13", isExpense:true, category:"Snacks") {
+    name
+    category
+    amount
+    date
+    isExpense
+  }
+}
+
+mutation income {
+  createTransaction(name:"Church@Main", amount: 20000, date: "2020-05-13", isExpense:false) {
+    name
+    category
+    amount
+    date
+    isExpense
+  }
+}
+
+mutation destroyTransaction {
+  deleteTransaction(id:20)
+}
+mutation destroyUser {
+  deleteUser
+}
+
+
+{
+  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkRhdmlkMiIsImlhdCI6MTU4OTQyMDg0NiwiZXhwIjoxNTg5NTA3MjQ2fQ.h-GMC5rar-njwDX1CGHRaQXLOKMJktxVdKiEnWJHArU"
+}

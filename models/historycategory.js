@@ -7,6 +7,9 @@ module.exports = (sequelize, DataTypes) => {
   }, {timestamps: false});
   HistoryCategory.associate = function(models) {
     // associations can be defined here
+    HistoryCategory.belongsTo(models.History, {
+      onDelete: 'CASCADE'
+    })
   };
   return HistoryCategory;
 };
