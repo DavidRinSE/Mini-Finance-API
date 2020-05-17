@@ -97,6 +97,10 @@ const mutations = {
         let user = await models.User.findOne({where: {username: decoded.username}})
         let transaction = await models.Transaction.findOne({where: {id}})
 
+        if(transaction.userId !== user.id){
+            throw new AuthenticationError("Cannot destroy a transaction you don't own")
+        }
+
         if (transaction.isExpense) {
             user = await user.update({
                 balance: user.balance + transaction.amount,
@@ -108,13 +112,7 @@ const mutations = {
                 income: user.income - transaction.amount
             })
         }
-
-        if(transaction.userId === user.id){
-            models.Transaction.destroy({where: {id}})
-        }else {
-            throw new AuthenticationError("Cannot destroy a transaction you don't own")
-        }
-
+        models.Transaction.destroy({where: {id}})
         return "Success"
     }
 }
