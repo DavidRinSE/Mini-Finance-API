@@ -10,6 +10,10 @@ module.exports = (sequelize, DataTypes) => {
   }, {timestamps: false});
   Transaction.associate = function(models) {
     // associations can be defined here
+    Transaction.belongsTo(models.User, {
+      foreignKey: "userId",
+      onDelete: 'CASCADE'
+    })
   };
   return Transaction;
 };
