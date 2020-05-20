@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 const { AuthenticationError } = require('apollo-server-express')
-// const {UserInputError} = require('apollo-server-express')
 
 const mutations = {
     login: async (_, {username, password}, {models}) => {
@@ -65,7 +64,7 @@ const mutations = {
                 ...data
             })
 
-            return transaction
+            return user
         } catch (err){
             console.log(err)
             throw new AuthenticationError("You must be logged in!")
@@ -112,8 +111,56 @@ const mutations = {
                 income: user.income - transaction.amount
             })
         }
-        models.Transaction.destroy({where: {id}})
+        await models.Transaction.destroy({where: {id}})
         return "Success"
+    },
+    createHistory: async (_, {endDate}, {models, token}) => {
+        let decoded;
+
+        try {
+            decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET)
+        } catch (err) {
+            throw new AuthenticationError("You must be logged in!")
+        }
+
+        let user = await models.User.findOne({where: {username: decoded.username}})
+        
+        const transactions = await user.getTransactions()
+        const expenseTransactions = transactions.filter((transaction) => transaction.isExpense)
+        const incomeTransactions = transactions.filter((transaction) => !transaction.isExpense)
+
+        
+        const history = await models.History.create({
+            userId: user.id,
+            balance: user.balance,
+            income: user.income,
+            expense: user.expense,
+            startDate: incomeTransactions[0].date,
+            endDate
+        })
+        
+        let categories = {}
+        expenseTransactions.forEach(expense => {
+            if (categories[expense.category]){
+                categories[expense.category].amount += expense.amount
+            } else {
+                categories[expense.category] = {
+                    historyId: history.id,
+                    amount: expense.amount,
+                    name: expense.category
+                }
+            }
+        });
+        const historyCategory = await models.HistoryCategory.bulkCreate(Object.values(categories))
+
+        user = await user.update({
+            balance:0,
+            income:0,
+            expense:0,
+        })
+
+        await models.Transaction.destroy({where: {userId: user.id}})
+        return user
     }
 }
 

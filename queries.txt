@@ -81,32 +81,54 @@ mutation createUser {
 }
 
 mutation expense {
-  createTransaction(name:"Red Bull", amount: 300, date: "2020-05-13", isExpense:true, category:"Snacks") {
-    name
-    category
-    amount
-    date
-    isExpense
+  createTransaction(name:"Victoria Fuel", amount: 2500, date: "2020-05-12", isExpense:true, category:"Gas") {
+    balance
+    expense
+    transactions {
+      name
+      category
+      amount
+      date
+      isExpense
+    }
   }
 }
 
 mutation income {
-  createTransaction(name:"Church@Main", amount: 20000, date: "2020-05-13", isExpense:false) {
-    name
-    category
-    amount
-    date
-    isExpense
+  createTransaction(name:"Church@Main", amount: 20000, date: "2020-05-08", isExpense:false) {
+    balance
+    income
+    transactions {
+      name
+      category
+      amount
+      date
+      isExpense
+    }
   }
 }
 
 mutation destroyTransaction {
-  deleteTransaction(id:20)
+  deleteTransaction(id:3)
 }
 mutation destroyUser {
   deleteUser
 }
 
+mutation createHistory {
+  createHistory(endDate: "2020-05-15") {
+    balance
+    expense
+    income
+    history {
+      balance
+      income
+      expense
+      startDate
+      endDate
+    }
+  }
+}
 
 {
   "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkRhdmlkMiIsImlhdCI6MTU4OTQyMDg0NiwiZXhwIjoxNTg5NTA3MjQ2fQ.h-GMC5rar-njwDX1CGHRaQXLOKMJktxVdKiEnWJHArU"
