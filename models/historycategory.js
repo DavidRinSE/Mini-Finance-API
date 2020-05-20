@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
   HistoryCategory.associate = function(models) {
     // associations can be defined here
     HistoryCategory.belongsTo(models.History, {
+      foreignKey: "historyId",
       onDelete: 'CASCADE'
     })
   };

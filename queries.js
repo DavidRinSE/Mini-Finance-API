@@ -16,14 +16,13 @@ const queries = {
         return users
     },
     history: async (_, {username}, {models, token}) => {
+        let decoded;
         try {
-            let decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET)
-            const user = await models.User.findAll({where: {username: decoded.username}})
-            const history = await user[0].getHistories()
-            return history
+            decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET)
         } catch (err){
             throw new AuthenticationError("You must be logged in!")
         }
+        const user = await models.User.findAll({where: {username: decoded.username}})
         const history = await user[0].getHistories()
         return history
     }
