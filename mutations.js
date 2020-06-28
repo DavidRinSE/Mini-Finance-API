@@ -135,7 +135,7 @@ const mutations = {
             balance: user.balance,
             income: user.income,
             expense: user.expense,
-            startDate: incomeTransactions[0].date,
+            startDate: (incomeTransactions[0]) ? incomeTransactions[0].date : expenseTransactions[0].date,
             endDate
         })
         
