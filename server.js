@@ -4,7 +4,6 @@ const { ApolloServer } = require('apollo-server-express');
 const bcrypt = require("bcrypt")
     
 const app = express()    
-const port = 4000
 
 const typeDefs = require('./schema')
 const resolvers = require('./resolvers')
