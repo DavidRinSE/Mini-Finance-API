@@ -21,6 +21,4 @@ server.applyMiddleware({ app });
 models.sequelize.authenticate();
 models.sequelize.sync();
 
-app.listen({ port: process.env.PORT || 4000}).then(({ url }) => {
-  console.log(`🚀 Server ready at ${url}`)
-})
+app.listen({ port: process.env.PORT || 4000})
