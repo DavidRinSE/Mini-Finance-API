@@ -55,7 +55,7 @@ type Query {
 
 type Mutation {
     login(username: String!, password: String!): Login
-    createUser(username: String!, password: String!): User
+    createUser(username: String!, password: String!): Login
     createTransaction(name: String!, amount: Int!, date: String!, isExpense: Boolean!, category: String): User
     deleteUser: String
     deleteTransaction(id: Int!): String
