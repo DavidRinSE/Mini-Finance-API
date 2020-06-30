@@ -25,14 +25,18 @@ const mutations = {
         const searchUser = await models.User.findAll({where: {username}})
         if (searchUser.length === 0){
             const hash = await bcrypt.hash(password, 10)
-            const user = await models.User.create({
+            await models.User.create({
                 username,
                 password: hash,
                 balance: 0,
                 income: 0,
                 expense: 0
             })
-            return user
+            const payload = {username}
+            const token = jwt.sign(payload, process.env.JWT_SECRET, {
+                expiresIn: "24h"
+            })
+            return {token}
         } else {
             return {error: {
                 message: "User already exist"
