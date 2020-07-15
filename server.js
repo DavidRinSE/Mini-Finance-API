@@ -21,4 +21,6 @@ server.applyMiddleware({ app });
 models.sequelize.authenticate();
 models.sequelize.sync();
 
-app.listen({ port: process.env.PORT || 4000})
+app.listen({ port: process.env.PORT || 4000}, () => {
+  console.log(`Running server on port ${process.env.PORT || 4000}`)
+})

@@ -17,7 +17,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: npm start
+    command: npm run dev
     volumes:
       - .:/src/app
     links:
