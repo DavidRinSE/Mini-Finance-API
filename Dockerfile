@@ -1,4 +1,4 @@
-FROM node:14.2
+FROM node:13
 
 RUN useradd -u 777 -r -m -U app
 RUN mkdir -p /src/app

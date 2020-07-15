@@ -17,10 +17,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: npm run migrate:up && npm start
+    command: npm start
     volumes:
       - .:/src/app
-      - node_modules_volume:/src/app/node_modules/
     links:
       - db
     depends_on:
@@ -30,10 +29,9 @@ services:
     networks:
       - backend
     environment:
-      DATABASE_URL: postgres://postgres@db:5433/finance
+      DATABASE_URL: postgres://postgres@db:5432/finance
       JWT_SECRET: ISSA_SECRET
 volumes:
-  node_modules_volume:
   data:
     driver: local
 networks:
