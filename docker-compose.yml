@@ -31,6 +31,7 @@ services:
     environment:
       DATABASE_URL: postgres://postgres@db:5432/finance
       JWT_SECRET: ISSA_SECRET
+      DEFAULT_USER_PASS: Super_safe
 volumes:
   data:
     driver: local
