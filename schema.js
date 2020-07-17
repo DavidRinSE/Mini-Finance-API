@@ -10,7 +10,7 @@ type User {
     income: Int
     transactions: [Transaction!]
     history: [History!]
-    error: Error
+    showDefault: Boolean
 }
 
 type Transaction {
@@ -19,7 +19,7 @@ type Transaction {
     category: String 
     amount: Int 
     date: String 
-    isExpense: Boolean 
+    isExpense: Boolean
 }
 
 type History {
@@ -29,13 +29,13 @@ type History {
     expense: Int 
     startDate: String 
     endDate: String 
-    categories: [Categories!] 
+    categories: [Categories!]
 }
 
 type Categories {
     id: Int 
     name: String 
-    amount: String 
+    amount: String
 }
 
 type Error {
@@ -44,7 +44,6 @@ type Error {
 
 type Login {
     token: String
-    error: Error
 }
 
 type Query {

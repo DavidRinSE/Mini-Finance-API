@@ -244,7 +244,8 @@ const makeDefaultEntries = async (models) => {
             password: hash,
             balance: defaultData.user.balance,
             income: defaultData.user.income,
-            expense: defaultData.user.expense
+            expense: defaultData.user.expense,
+            showDefault: true
         })
     } else {
         user = searchUser[0]

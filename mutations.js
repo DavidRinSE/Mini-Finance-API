@@ -7,7 +7,7 @@ const mutations = {
         const userQuery = await models.User.findAll({where: {username}})
         const user = userQuery[0]
         if (!user) {
-            return {error: {message: "No user found"}}
+            // return {error: {message: "No user found"}}
         } else {
             const validpass = await bcrypt.compareSync(password, user.get("password"))
             if (validpass) {
@@ -17,7 +17,7 @@ const mutations = {
                 })
                 return {token}
             } else {
-                return {error: {message: "Incorrect password"}}
+                // return {error: {message: "Incorrect password"}}
             }
         }
     },
@@ -30,7 +30,8 @@ const mutations = {
                 password: hash,
                 balance: 0,
                 income: 0,
-                expense: 0
+                expense: 0,
+                showDefault: true
             })
             const payload = {username}
             const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -38,9 +39,9 @@ const mutations = {
             })
             return {token}
         } else {
-            return {error: {
-                message: "User already exist"
-            }}
+            // return {error: {
+            //     message: "User already exist"
+            // }}
         }
     },
     createTransaction: async (_, {name, amount, date, isExpense, category}, {models, token}) => {
@@ -50,12 +51,25 @@ const mutations = {
             const userQueryArr = await models.User.findAll({where: {username: decoded.username}})
             let user = userQueryArr[0]
 
+            if(user.username === 'deault_user'){
+                // return {error: {message: 'Cannot create a transaction for default user'}}
+            }
+
             if(isExpense) {
+                if(user.showDefault){
+                    // return {error: {message: "Clear your default data first by adding an income"}}
+                }
+                else {
+                    console.log("!!!!!!! BIG FAIL")
+                }
                 user = await user.update({
                     balance: user.balance - amount,
                     expense: user.expense + amount
                 })
             } else {
+                if(user.showDefault){
+                    await user.update({showDefault: false})
+                }
                 user = await user.update({
                     balance: user.balance + amount,
                     income: user.income + amount
@@ -128,6 +142,9 @@ const mutations = {
         }
 
         let user = await models.User.findOne({where: {username: decoded.username}})
+        if(user.showDefault){
+            return {error: {message: "Cannot create a new period for your user, add income to this pay period."}}
+        }
         
         const transactions = await user.getTransactions()
         const expenseTransactions = transactions.filter((transaction) => transaction.isExpense)
