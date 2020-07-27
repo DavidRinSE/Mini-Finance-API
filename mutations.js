@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
-const { AuthenticationError } = require('apollo-server-express')
+const { AuthenticationError, UserInputError } = require('apollo-server-express')
 
 const mutations = {
     login: async (_, {username, password}, {models}) => {
         const userQuery = await models.User.findAll({where: {username}})
         const user = userQuery[0]
         if (!user) {
-            // return {error: {message: "No user found"}}
+            throw new UserInputError('No user found', {invalidArgs: {username}})
         } else {
             const validpass = await bcrypt.compareSync(password, user.get("password"))
             if (validpass) {
@@ -17,7 +17,7 @@ const mutations = {
                 })
                 return {token}
             } else {
-                // return {error: {message: "Incorrect password"}}
+                throw new UserInputError('Incorrect password', {invalidArgs: {password}})
             }
         }
     },
@@ -39,9 +39,7 @@ const mutations = {
             })
             return {token}
         } else {
-            // return {error: {
-            //     message: "User already exist"
-            // }}
+            throw new UserInputError('User already exists', {invalidArgs: {username}})
         }
     },
     createTransaction: async (_, {name, amount, date, isExpense, category}, {models, token}) => {
@@ -52,15 +50,12 @@ const mutations = {
             let user = userQueryArr[0]
 
             if(user.username === 'deault_user'){
-                // return {error: {message: 'Cannot create a transaction for default user'}}
+                throw new UserInputError('Cannot create transaction for default user', {invalidArgs: {username}})
             }
 
             if(isExpense) {
                 if(user.showDefault){
-                    // return {error: {message: "Clear your default data first by adding an income"}}
-                }
-                else {
-                    console.log("!!!!!!! BIG FAIL")
+                    throw new UserInputError('Clear your default data first by adding income', {invalidArgs: {isExpense}})
                 }
                 user = await user.update({
                     balance: user.balance - amount,
@@ -143,7 +138,7 @@ const mutations = {
 
         let user = await models.User.findOne({where: {username: decoded.username}})
         if(user.showDefault){
-            return {error: {message: "Cannot create a new period for your user, add income to this pay period."}}
+            throw new UserInputError('UCannot create new pay period from default data', {invalidArgs: {username}})
         }
         
         const transactions = await user.getTransactions()
