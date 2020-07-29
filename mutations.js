@@ -43,45 +43,46 @@ const mutations = {
         }
     },
     createTransaction: async (_, {name, amount, date, isExpense, category}, {models, token}) => {
+        let decoded;
         try {
-            let decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET)
-            
-            const userQueryArr = await models.User.findAll({where: {username: decoded.username}})
-            let user = userQueryArr[0]
-
-            if(user.username === 'deault_user'){
-                throw new UserInputError('Cannot create transaction for default user', {invalidArgs: {username}})
-            }
-
-            if(isExpense) {
-                if(user.showDefault){
-                    throw new UserInputError('Clear your default data first by adding income', {invalidArgs: {isExpense}})
-                }
-                user = await user.update({
-                    balance: user.balance - amount,
-                    expense: user.expense + amount
-                })
-            } else {
-                if(user.showDefault){
-                    await user.update({showDefault: false})
-                }
-                user = await user.update({
-                    balance: user.balance + amount,
-                    income: user.income + amount
-                })
-            }
-
-            let data = {name, amount, date, isExpense, category: category || ""}
-            const transaction = await models.Transaction.create({
-                userId: user.id,
-                ...data
-            })
-
-            return user
+            decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET)
         } catch (err){
             console.log(err)
             throw new AuthenticationError("You must be logged in!")
         }
+        
+        const userQueryArr = await models.User.findAll({where: {username: decoded.username}})
+        let user = userQueryArr[0]
+
+        if(user.username === 'deault_user'){
+            throw new UserInputError('Cannot create transaction for default user', {invalidArgs: {username}})
+        }
+
+        if(isExpense) {
+            if(user.showDefault){
+                throw new UserInputError('Clear your default data first by adding income', {invalidArgs: ['isExpense']})
+            }
+            user = await user.update({
+                balance: user.balance - amount,
+                expense: user.expense + amount
+            })
+        } else {
+            if(user.showDefault){
+                await user.update({showDefault: false})
+            }
+            user = await user.update({
+                balance: user.balance + amount,
+                income: user.income + amount
+            })
+        }
+
+        let data = {name, amount, date, isExpense, category: category || ""}
+        const transaction = await models.Transaction.create({
+            userId: user.id,
+            ...data
+        })
+
+        return user
     },
     deleteUser: async (_, __, {models, token}) => {
         let decoded
