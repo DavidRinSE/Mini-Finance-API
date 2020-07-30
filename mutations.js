@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
-const { AuthenticationError } = require('apollo-server-express')
+const { AuthenticationError, UserInputError } = require('apollo-server-express')
 
 const mutations = {
     login: async (_, {username, password}, {models}) => {
         const userQuery = await models.User.findAll({where: {username}})
         const user = userQuery[0]
         if (!user) {
-            return {error: {message: "No user found"}}
+            throw new UserInputError('No user found', {invalidArgs: {username}})
         } else {
             const validpass = await bcrypt.compareSync(password, user.get("password"))
             if (validpass) {
@@ -17,7 +17,7 @@ const mutations = {
                 })
                 return {token}
             } else {
-                return {error: {message: "Incorrect password"}}
+                throw new UserInputError('Incorrect password', {invalidArgs: {password}})
             }
         }
     },
@@ -30,7 +30,8 @@ const mutations = {
                 password: hash,
                 balance: 0,
                 income: 0,
-                expense: 0
+                expense: 0,
+                showDefault: true
             })
             const payload = {username}
             const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -38,41 +39,50 @@ const mutations = {
             })
             return {token}
         } else {
-            return {error: {
-                message: "User already exist"
-            }}
+            throw new UserInputError('User already exists', {invalidArgs: {username}})
         }
     },
     createTransaction: async (_, {name, amount, date, isExpense, category}, {models, token}) => {
+        let decoded;
         try {
-            let decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET)
-            
-            const userQueryArr = await models.User.findAll({where: {username: decoded.username}})
-            let user = userQueryArr[0]
-
-            if(isExpense) {
-                user = await user.update({
-                    balance: user.balance - amount,
-                    expense: user.expense + amount
-                })
-            } else {
-                user = await user.update({
-                    balance: user.balance + amount,
-                    income: user.income + amount
-                })
-            }
-
-            let data = {name, amount, date, isExpense, category: category || ""}
-            const transaction = await models.Transaction.create({
-                userId: user.id,
-                ...data
-            })
-
-            return user
+            decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET)
         } catch (err){
             console.log(err)
             throw new AuthenticationError("You must be logged in!")
         }
+        
+        const userQueryArr = await models.User.findAll({where: {username: decoded.username}})
+        let user = userQueryArr[0]
+
+        if(user.username === 'deault_user'){
+            throw new UserInputError('Cannot create transaction for default user', {invalidArgs: {username}})
+        }
+
+        if(isExpense) {
+            if(user.showDefault){
+                throw new UserInputError('Clear your default data first by adding income', {invalidArgs: ['isExpense']})
+            }
+            user = await user.update({
+                balance: user.balance - amount,
+                expense: user.expense + amount
+            })
+        } else {
+            if(user.showDefault){
+                await user.update({showDefault: false})
+            }
+            user = await user.update({
+                balance: user.balance + amount,
+                income: user.income + amount
+            })
+        }
+
+        let data = {name, amount, date, isExpense, category: category || ""}
+        const transaction = await models.Transaction.create({
+            userId: user.id,
+            ...data
+        })
+
+        return user
     },
     deleteUser: async (_, __, {models, token}) => {
         let decoded
@@ -128,6 +138,9 @@ const mutations = {
         }
 
         let user = await models.User.findOne({where: {username: decoded.username}})
+        if(user.showDefault){
+            throw new UserInputError('UCannot create new pay period from default data', {invalidArgs: {username}})
+        }
         
         const transactions = await user.getTransactions()
         const expenseTransactions = transactions.filter((transaction) => transaction.isExpense)

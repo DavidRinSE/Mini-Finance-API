@@ -35,6 +35,11 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      },
+      showDefault: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
       }
     });
   },

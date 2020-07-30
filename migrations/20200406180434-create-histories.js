@@ -37,7 +37,7 @@ module.exports = {
       endDate: {
         allowNull: false,
         type: Sequelize.STRING
-      },
+      }
     }, {
       timestamps: false
     });
