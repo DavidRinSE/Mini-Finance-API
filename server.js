@@ -14,6 +14,7 @@ const models = require('./models')
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  introspection: true,  playground: true,
   context: async ({ req }) => ({
     models,
     token: req.headers.authorization || ''
