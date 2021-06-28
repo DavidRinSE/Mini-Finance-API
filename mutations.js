@@ -4,6 +4,7 @@ const { AuthenticationError, UserInputError } = require('apollo-server-express')
 
 const mutations = {
     login: async (_, {username, password}, {models}) => {
+        console.log(username)
         const userQuery = await models.User.findAll({where: {username}})
         const user = userQuery[0]
         if (!user) {
