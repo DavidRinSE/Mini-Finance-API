@@ -4,22 +4,26 @@ const { AuthenticationError, UserInputError } = require('apollo-server-express')
 
 const mutations = {
     login: async (_, {username, password}, {models}) => {
-        console.log(username)
-        const userQuery = await models.User.findAll({where: {username}})
-        const user = userQuery[0]
-        if (!user) {
-            throw new UserInputError('No user found', {invalidArgs: {username}})
-        } else {
-            const validpass = await bcrypt.compareSync(password, user.get("password"))
-            if (validpass) {
-                const payload = {username: user.get("username")}
-                const token = jwt.sign(payload, process.env.JWT_SECRET, {
-                    expiresIn: "24h"
-                })
-                return {token}
+        try {
+            console.log(username)
+            const userQuery = await models.User.findAll({where: {username}})
+            const user = userQuery[0]
+            if (!user) {
+                throw new UserInputError('No user found', {invalidArgs: {username}})
             } else {
-                throw new UserInputError('Incorrect password', {invalidArgs: {password}})
+                const validpass = await bcrypt.compareSync(password, user.get("password"))
+                if (validpass) {
+                    const payload = {username: user.get("username")}
+                    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+                        expiresIn: "24h"
+                    })
+                    return {token}
+                } else {
+                    throw new UserInputError('Incorrect password', {invalidArgs: {password}})
+                }
             }
+        } catch (err) {
+            console.log(err)
         }
     },
     createUser: async (_, {username, password}, {models}) => {
